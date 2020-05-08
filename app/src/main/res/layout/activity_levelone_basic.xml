@@ -1,24 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BasicLevel1Activity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".BasicLevel1Activity">
 
-    <Button
-        android:id="@+id/btnClickMe"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ClickMe"
-        tools:layout_editor_absoluteX="174dp"
-        tools:layout_editor_absoluteY="155dp" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvResult"
-        android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/btnClickMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Fire new coroutines"
+            tools:layout_editor_absoluteX="174dp"
+            tools:layout_editor_absoluteY="155dp" />
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:layout_editor_absoluteX="183dp"
+            tools:layout_editor_absoluteY="256dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="183dp"
-        tools:layout_editor_absoluteY="256dp" />
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/job_progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/job_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="start Job" />
+
+        <TextView
+            android:id="@+id/job_complete_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+    </LinearLayout>
 </LinearLayout>

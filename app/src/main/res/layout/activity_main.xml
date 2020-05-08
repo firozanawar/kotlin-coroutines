@@ -11,6 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="goToBasicLevel1Activity"
-        android:text="Basic Level1" />
+        android:text="Coroutines by CodingWithMitch" />
 
 </LinearLayout>
