@@ -12,7 +12,7 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".BasicLevel1Activity" >
+        <activity android:name=".CodingWithMitchActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

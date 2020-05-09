@@ -5,11 +5,12 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_levelone_basic.*
+import kotlinx.android.synthetic.main.activity_coding_with_mitch.*
 import kotlinx.coroutines.*
+import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
-class BasicLevel1Activity : AppCompatActivity(), View.OnClickListener {
+class CodingWithMitchActivity : AppCompatActivity(), View.OnClickListener {
 
     val JOB_TIMEOUT = 1900L
 
@@ -17,13 +18,18 @@ class BasicLevel1Activity : AppCompatActivity(), View.OnClickListener {
     private val PROGRESS_START = 0
     private val JOB_TIME = 4000 // ms
     lateinit var job: CompletableJob
+    lateinit var parentJob: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_levelone_basic)
+        setContentView(R.layout.activity_coding_with_mitch)
 
         btnClickMe.setOnClickListener(this)
         job_button.setOnClickListener(this)
+        button_run_blocking.setOnClickListener(this)
+        button_global_scope.setOnClickListener(this)
+        button_global_scope_cancel.setOnClickListener(this)
+        button_error_exception.setOnClickListener(this)
     }
 
     override fun onClick(view: View?) {
@@ -44,6 +50,22 @@ class BasicLevel1Activity : AppCompatActivity(), View.OnClickListener {
                     initJob()
                 }
                 job_progress_bar.startJobOrCancel(job)
+            }
+
+            R.id.button_run_blocking -> CoroutineScope(Dispatchers.Main).launch {
+                runBloackingDemo()
+            }
+
+            R.id.button_global_scope -> {
+                main()  // Case #6
+            }
+
+            R.id.button_global_scope_cancel -> {
+                parentJob.cancel()
+            }
+
+            R.id.button_error_exception -> {
+                errorHandlingExceptionDemo()
             }
         }
     }
@@ -149,7 +171,7 @@ class BasicLevel1Activity : AppCompatActivity(), View.OnClickListener {
 
     fun showToas(text: String) {
         GlobalScope.launch(Dispatchers.Main) {
-            Toast.makeText(this@BasicLevel1Activity, text, Toast.LENGTH_LONG).show()
+            Toast.makeText(this@CodingWithMitchActivity, text, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -246,16 +268,150 @@ class BasicLevel1Activity : AppCompatActivity(), View.OnClickListener {
 
                 val result2 = async {
                     println("debug: Launching job2 in ${Thread.currentThread().name}")
-                    try{
+                    try {
                         getResult2FromAPI(result1)
                         //getResult2FromAPI("ssfsfsfsdfsdzf")  // To check the exception
-                    }catch (e:CancellationException){
+                    } catch (e: CancellationException) {
                         e.message
                     }
                 }.await()
                 println("debug: Got result2 ${result2}")
             }
             println("debug: total time elapsed ${measureTime}")
+        }
+    }
+
+    /************ Case:5 runBlocking{} in Kotlin Coroutines ************/
+    private suspend fun runBloackingDemo() {
+
+        CoroutineScope(Dispatchers.Main).launch {
+            println("debug: Starting job in ${Thread.currentThread().name}")
+
+            val result1 = getResult()
+            println("debug: result1: $result1")
+            val result2 = getResult()
+            println("debug: result2: $result2")
+            val result3 = getResult()
+            println("debug: result3: $result3")
+            val result4 = getResult()
+            println("debug: result4: $result4")
+            val result5 = getResult()
+            println("debug: result5: $result5")
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(1000)
+            runBlocking {
+                println("debug: Blocking the ${Thread.currentThread().name}")
+                delay(4000)
+                println("debug: Done blocking the ${Thread.currentThread().name}")
+            }
+        }
+    }
+
+    private suspend fun getResult(): Int {
+        delay(1000)
+        return Random.nextInt(0, 100)
+    }
+
+    /************ Case:6 Be VERY Careful with GlobalScope ************/
+    suspend fun work(i: Int) {
+        delay(3000)
+        println("debug: Work $i ${Thread.currentThread().name}")
+    }
+
+    fun main() {
+        val startTime = System.currentTimeMillis();
+        println("debug: Starting the parent job")
+        parentJob = CoroutineScope(Dispatchers.Main).launch {
+            GlobalScope.launch {
+                work(1)
+            }
+
+            GlobalScope.launch {
+                work(2)
+            }
+        }
+
+        parentJob.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                println("debug: Job cancelled after ${System.currentTimeMillis() - startTime} ms")
+            } else {
+                println("debug: Done in ${System.currentTimeMillis() - startTime} ms")
+            }
+        }
+    }
+
+    /************ Case:7  Coroutine Error Handling and Exceptions ************/
+
+    // solution For case #2
+    val handler = CoroutineExceptionHandler { _, exception ->
+        println("Exception thrown in one of the children: $exception")
+    }
+
+    fun errorHandlingExceptionDemo() {
+        val parentJob = CoroutineScope(Dispatchers.IO).launch(handler) {
+
+            // --------- JOB A ---------
+            val jobA = launch {
+                val resultA = getResult(1)
+                println("debug: resultA: ${resultA}")
+            }
+            jobA.invokeOnCompletion { throwable ->
+                if (throwable != null) {
+                    println("debug: Error getting resultA: ${throwable}")
+                }
+            }
+
+            // --------- JOB B ---------
+            val jobB = launch {
+                val resultB = getResult(2)
+                println("debug: resultB: ${resultB}")
+            }
+            //delay(1000)
+            //jobB.cancel()
+            jobB.invokeOnCompletion { throwable ->
+                if (throwable != null) {
+                    println("debug: Error getting resultB: ${throwable}")
+                }
+            }
+
+            // --------- JOB C ---------
+            val jobC = launch {
+                val resultC = getResult(3)
+                println("debug: resultC: ${resultC}")
+            }
+            jobC.invokeOnCompletion { throwable ->
+                if (throwable != null) {
+                    println("debug: Error getting resultC: ${throwable}")
+                }
+            }
+        }
+
+        parentJob.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                println("debug: Parent job failed: ${throwable}")
+            } else {
+                println("debug: Parent job SUCCESS")
+            }
+        }
+    }
+
+    suspend fun getResult(number: Int): Int {
+        return withContext(Dispatchers.Main) {
+            delay(number * 500L)
+            if (number == 2) {
+
+                // Case #2
+                //throw Exception("Error getting result for number: ${number}")
+
+                // case #3
+                //cancel(CancellationException("debug Error getting result for number: ${number}"))
+
+                // case #4
+                throw CancellationException("Error getting result for number: ${number}") // treated like "cancel()"
+            }
+            number * 2
         }
     }
 }

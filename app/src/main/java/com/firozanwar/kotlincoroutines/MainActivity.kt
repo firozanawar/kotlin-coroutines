@@ -13,6 +13,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToBasicLevel1Activity(view: View) {
-        startActivity(Intent(this, BasicLevel1Activity::class.java))
+        startActivity(Intent(this, CodingWithMitchActivity::class.java))
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".BasicLevel1Activity">
+    tools:context=".CodingWithMitchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,4 +59,47 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button_run_blocking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="runBloacking Demo" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/button_global_scope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="Start GlobalScope" />
+
+        <Button
+            android:id="@+id/button_global_scope_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_weight="2"
+            android:layout_marginStart="10dp"
+            android:text="Cancel"
+            android:layout_marginLeft="10dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_error_exception"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Coroutine Error Handling and Exceptions" />
 </LinearLayout>
